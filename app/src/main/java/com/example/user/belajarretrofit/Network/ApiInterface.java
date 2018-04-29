@@ -28,4 +28,10 @@ public interface ApiInterface {
     Call<Konsumen> updateData(@Field("idkonsumen") String idKonsumen,
                             @Field("namakonsumen") String namakonsumen,
                             @Field("alamatkonsumen") String alamatkonsumen);
+
+    @FormUrlEncoded
+    @POST("/sisteminformasi/hapusApi.php")
+    Call<Konsumen> deleteData(@Field("idkonsumen") String idKonsumen);
+
+
 }

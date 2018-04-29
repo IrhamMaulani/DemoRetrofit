@@ -1,11 +1,14 @@
 package com.example.user.belajarretrofit.Activity;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -24,6 +27,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         refresh();
+
+
 
         // Inisialisasi SwipeRefreshLayout
         SwipeRefresh = findViewById(R.id.swipe_refresh);
@@ -121,7 +128,72 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                 });
+
+                    listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                                       int position, long id) {
+                            // TODO Auto-generated method stub
+                            final Konsumen konsumen = repos.get(position);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this );
+                            builder.setCancelable(true);
+                           // builder.setTitle("Apakah Anda Ingin Menghapus Data ini?");
+                            builder.setMessage("Apakah Anda Ingin Menghapus Data ini?");
+                            builder.setPositiveButton("Confirm",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+
+                                            Retrofit.Builder builder = new Retrofit.Builder()
+                                                    .baseUrl("http://192.168.1.69/")
+                                                    .addConverterFactory(GsonConverterFactory.create());
+
+                                            Retrofit retrofit = builder.build();
+                                            ApiInterface client = retrofit.create(ApiInterface.class);
+                                            Call<Konsumen> call = client.deleteData(konsumen.getIdkonsumen());
+
+                                            refresh();
+
+                                            call.enqueue(new Callback<Konsumen>() {
+                                                @Override
+                                                public void onResponse(Call<Konsumen> call, Response<Konsumen> response) {
+                                                    Toast.makeText(MainActivity.this, "Data telah di di hapus " + response.body().getResponseServer(), Toast.LENGTH_SHORT).show();
+
+
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Konsumen> call, Throwable t) {
+
+                                                    Toast.makeText(MainActivity.this, "Gagal menhapus Data :(" , Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+
+                                        }
+                                    });
+                            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(MainActivity.this, "SA :(", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+
+
+
+                            return true;
+                        }
+
+                    });
+
                 }
+
                 else if(response.code() == 400){
                     Toast.makeText(MainActivity.this, "Server busuk :(", Toast.LENGTH_SHORT).show();
                 }
