@@ -1,5 +1,6 @@
 package com.example.user.belajarretrofit.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +27,9 @@ public class UpdateData extends AppCompatActivity {
         setContentView(R.layout.activity_insert_data);
 
         Bundle b = this.getIntent().getExtras();
+        assert b != null;
         String[] array=b.getStringArray("List");
+
 
         final EditText inputNama = (EditText) findViewById(R.id.input_nama);
         final EditText inputAlamat = (EditText) findViewById(R.id.input_alamat);
@@ -74,6 +77,16 @@ public class UpdateData extends AppCompatActivity {
             }
         });
 
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent a = new Intent(this,MainActivity.class);
+        a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(a);
+        super.onBackPressed();
 
     }
 }

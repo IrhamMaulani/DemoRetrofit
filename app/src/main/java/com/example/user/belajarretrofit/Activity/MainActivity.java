@@ -47,7 +47,130 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        refresh();
+        //Mulai untuk Get data,intent update data dan delete data
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl("http://192.168.1.69/")
+                .addConverterFactory(GsonConverterFactory.create());
+
+        Retrofit retrofit = builder.build();
+
+        ApiInterface client = retrofit.create(ApiInterface.class);
+        Call<List<Konsumen>> call = client.getUser();
+        call.enqueue(new Callback<List<Konsumen>>() {
+            @Override
+            public void onResponse(Call<List<Konsumen>> call, Response<List<Konsumen>> response) {
+                if (response.isSuccessful()) {
+                    final List<Konsumen> repos = response.body();
+
+                    listView.setAdapter(new KonsumenAdapter(MainActivity.this, repos));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                            Konsumen konsumen = repos.get(position);
+                            // Intent intent = new Intent(MainActivity.this, UpdateData.class);
+                            //intent.putExtra("EXTRA_SESSION_ID", konsumen.getIdkonsumen());
+
+                            //String message="Terpilih : " + konsumen.getIdkonsumen();
+                            // Toast.makeText(MainActivity.this, "aa:(" + message, Toast.LENGTH_SHORT).show();
+
+                            // Start the new activity
+                            //startActivity(intent);
+                            Bundle b = new Bundle();
+                            b.putStringArray("List", new String[]{konsumen.getNamakonsumen(), konsumen.getAlamatkonsumen(),konsumen.getIdkonsumen()});
+                            Intent i=new Intent(MainActivity.this   , UpdateData.class);
+                            i.putExtras(b);
+                            startActivity(i);
+
+                        }
+                    });
+
+                    listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                                       final int position, long id) {
+                            // TODO Auto-generated method stub
+                            final Konsumen konsumen = repos.get(position);
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this );
+                            builder.setCancelable(true);
+                            // builder.setTitle("Apakah Anda Ingin Menghapus Data ini?");
+                            builder.setMessage("Apakah Anda Ingin Menghapus Data ini?");
+                            builder.setPositiveButton("Confirm",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+
+                                            Retrofit.Builder builder = new Retrofit.Builder()
+                                                    .baseUrl("http://192.168.1.69/")
+                                                    .addConverterFactory(GsonConverterFactory.create());
+
+                                            Retrofit retrofit = builder.build();
+                                            ApiInterface client = retrofit.create(ApiInterface.class);
+                                            Call<Konsumen> call = client.deleteData(konsumen.getIdkonsumen());
+
+
+
+                                            call.enqueue(new Callback<Konsumen>() {
+                                                @Override
+                                                public void onResponse(Call<Konsumen> call, Response<Konsumen> response) {
+                                                    Toast.makeText(MainActivity.this, "Data telah di di hapus " + response.body().getResponseServer(), Toast.LENGTH_SHORT).show();
+                                                    refresh();
+                                                    //untuk reset position
+                                                    repos.remove(position);
+                                                    //this..notifyDataSetChanged();
+
+
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Konsumen> call, Throwable t) {
+
+                                                    Toast.makeText(MainActivity.this, "Gagal menhapus Data :(" , Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+
+                                        }
+                                    });
+                            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(MainActivity.this, "SA :(", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+
+
+
+                            return true;
+                        }
+
+                    });
+
+                }
+
+                else if(response.code() == 400){
+                    Toast.makeText(MainActivity.this, "Server busuk :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Konsumen>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "error :(", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+
+
+        //Akhir dari getdata,intent update dan delete
 
 
 
@@ -107,90 +230,6 @@ public class MainActivity extends AppCompatActivity {
                     final List<Konsumen> repos = response.body();
 
                     listView.setAdapter(new KonsumenAdapter(MainActivity.this, repos));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
-                            Konsumen konsumen = repos.get(position);
-                           // Intent intent = new Intent(MainActivity.this, UpdateData.class);
-                            //intent.putExtra("EXTRA_SESSION_ID", konsumen.getIdkonsumen());
-
-                            //String message="Terpilih : " + konsumen.getIdkonsumen();
-                           // Toast.makeText(MainActivity.this, "aa:(" + message, Toast.LENGTH_SHORT).show();
-
-                            // Start the new activity
-                            //startActivity(intent);
-                            Bundle b = new Bundle();
-                            b.putStringArray("List", new String[]{konsumen.getNamakonsumen(), konsumen.getAlamatkonsumen(),konsumen.getIdkonsumen()});
-                            Intent i=new Intent(MainActivity.this   , UpdateData.class);
-                            i.putExtras(b);
-                            startActivity(i);
-
-                        }
-                });
-
-                    listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                        @Override
-                        public boolean onItemLongClick(AdapterView<?> parent, View view,
-                                                       int position, long id) {
-                            // TODO Auto-generated method stub
-                            final Konsumen konsumen = repos.get(position);
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this );
-                            builder.setCancelable(true);
-                           // builder.setTitle("Apakah Anda Ingin Menghapus Data ini?");
-                            builder.setMessage("Apakah Anda Ingin Menghapus Data ini?");
-                            builder.setPositiveButton("Confirm",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-
-                                            Retrofit.Builder builder = new Retrofit.Builder()
-                                                    .baseUrl("http://192.168.1.69/")
-                                                    .addConverterFactory(GsonConverterFactory.create());
-
-                                            Retrofit retrofit = builder.build();
-                                            ApiInterface client = retrofit.create(ApiInterface.class);
-                                            Call<Konsumen> call = client.deleteData(konsumen.getIdkonsumen());
-
-                                            refresh();
-
-                                            call.enqueue(new Callback<Konsumen>() {
-                                                @Override
-                                                public void onResponse(Call<Konsumen> call, Response<Konsumen> response) {
-                                                    Toast.makeText(MainActivity.this, "Data telah di di hapus " + response.body().getResponseServer(), Toast.LENGTH_SHORT).show();
-
-
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<Konsumen> call, Throwable t) {
-
-                                                    Toast.makeText(MainActivity.this, "Gagal menhapus Data :(" , Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-
-
-                                        }
-                                    });
-                            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(MainActivity.this, "SA :(", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-
-
-
-                            return true;
-                        }
-
-                    });
 
                 }
 
@@ -209,4 +248,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPostResume() {
+        refresh();
+        super.onPostResume();
+    }
 }
