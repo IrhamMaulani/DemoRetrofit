@@ -1,2 +1,2 @@
 # DemoRetrofit
-Demo CRUD android menggunakan Retrofit 2 menggunakan REST Api dari PHP Native
+Demo CRUD android menggunakan Retrofit 2 dan REST Api dari PHP Native
