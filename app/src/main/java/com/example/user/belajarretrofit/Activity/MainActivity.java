@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -96,9 +97,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Konsumen>> call, Response<List<Konsumen>> response) {
                 if (response.isSuccessful()) {
-                    List<Konsumen> repos = response.body();
+                    final List<Konsumen> repos = response.body();
 
                     listView.setAdapter(new KonsumenAdapter(MainActivity.this, repos));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                            Konsumen konsumen = repos.get(position);
+                           // Intent intent = new Intent(MainActivity.this, UpdateData.class);
+                            //intent.putExtra("EXTRA_SESSION_ID", konsumen.getIdkonsumen());
+
+                            //String message="Terpilih : " + konsumen.getIdkonsumen();
+                           // Toast.makeText(MainActivity.this, "aa:(" + message, Toast.LENGTH_SHORT).show();
+
+                            // Start the new activity
+                            //startActivity(intent);
+                            Bundle b = new Bundle();
+                            b.putStringArray("List", new String[]{konsumen.getNamakonsumen(), konsumen.getAlamatkonsumen(),konsumen.getIdkonsumen()});
+                            Intent i=new Intent(MainActivity.this   , UpdateData.class);
+                            i.putExtras(b);
+                            startActivity(i);
+
+                        }
+                });
                 }
                 else if(response.code() == 400){
                     Toast.makeText(MainActivity.this, "Server busuk :(", Toast.LENGTH_SHORT).show();

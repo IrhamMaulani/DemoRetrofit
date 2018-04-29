@@ -10,6 +10,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiInterface {
@@ -22,4 +23,9 @@ public interface ApiInterface {
     Call<Konsumen> postData(@Field("namaKonsumen") String namakonsumen,
                             @Field("alamatkonsumen") String alamatkonsumen);
 
+    @FormUrlEncoded
+    @POST("/sisteminformasi/updatedatajson.php")
+    Call<Konsumen> updateData(@Field("idkonsumen") String idKonsumen,
+                            @Field("namakonsumen") String namakonsumen,
+                            @Field("alamatkonsumen") String alamatkonsumen);
 }

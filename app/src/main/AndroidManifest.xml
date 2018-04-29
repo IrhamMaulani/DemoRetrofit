@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.MainActivity" />
-        <activity android:name=".Activity.InsertData"></activity>
+        <activity android:name=".Activity.InsertData" />
+        <activity android:name=".Activity.UpdateData"></activity>
     </application>
 
 </manifest>

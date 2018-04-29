@@ -12,23 +12,32 @@ import com.example.user.belajarretrofit.Model.Konsumen;
 import com.example.user.belajarretrofit.Network.ApiInterface;
 import com.example.user.belajarretrofit.R;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class InsertData extends AppCompatActivity {
+public class UpdateData extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_data);
 
+        Bundle b = this.getIntent().getExtras();
+        String[] array=b.getStringArray("List");
+
         final EditText inputNama = (EditText) findViewById(R.id.input_nama);
         final EditText inputAlamat = (EditText) findViewById(R.id.input_alamat);
+
+        assert array != null;
+        String namaKonsumen = array[0];
+        String alamatKonsumen = array[1];
+        final String idKonsumen = array[2];
+
+        inputNama.setText(namaKonsumen);
+        inputAlamat.setText(alamatKonsumen);
 
         Button inputData = (Button) findViewById(R.id.button_for_submit);
 
@@ -44,12 +53,12 @@ public class InsertData extends AppCompatActivity {
 
                 Retrofit retrofit = builder.build();
                 ApiInterface client = retrofit.create(ApiInterface.class);
-                Call<Konsumen> call = client.postData(inputNama.getText().toString(),inputAlamat.getText().toString());
+                Call<Konsumen> call = client. updateData(idKonsumen,inputNama.getText().toString(),inputAlamat.getText().toString());
 
                 call.enqueue(new Callback<Konsumen>() {
                     @Override
                     public void onResponse(Call<Konsumen> call, Response<Konsumen> response) {
-                        Toast.makeText(InsertData.this, "Data telah di update " + response.body().getResponseServer(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UpdateData.this, "Data telah di update " + response.body().getResponseServer(), Toast.LENGTH_SHORT).show();
                         Log.v("cek sasja","isi dari konsumen" +response.body().getResponseServer() );
 
                     }
@@ -57,7 +66,7 @@ public class InsertData extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<Konsumen> call, Throwable t) {
 
-                        Toast.makeText(InsertData.this, "Gagal memasukkan Data :(" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UpdateData.this, "Gagal memasukkan Data :(" , Toast.LENGTH_SHORT).show();
                         Log.v("Coba","isi dari konsumen" +inputAlamat.getText().toString() );
                     }
                 });
@@ -67,9 +76,4 @@ public class InsertData extends AppCompatActivity {
 
 
     }
-
-
-
-
-    }
-
+}
